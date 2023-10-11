@@ -1,7 +1,21 @@
-from dash import html
-from flask import request
+from dash import callback, html
+from dash.dependencies import Input, Output
+
+from utils import get_current_domino_user
+
+from typing import Any
+
+@callback(
+    Output("current-user-header", "children"),
+    Input("get-current-user-dummy", "children")
+)
+def current_user_header(_: Any) -> str:
+    username: str = get_current_domino_user()
+    return f"Welcome {username}"
 
 def create_index_page() -> html.Div:
-    user: str = request.headers.get("domino-username", "UNKNOWN")
+    return html.Div(children=[
+        html.H1(id="current-user-header"),
 
-    return html.Div(f"Hello {user}")
+        html.Div(id="get-current-user-dummy", style={"display": "none"})
+    ])
