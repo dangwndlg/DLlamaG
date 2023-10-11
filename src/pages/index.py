@@ -1,6 +1,7 @@
 from dash import callback, dcc, html
 from dash.dependencies import Input, Output, State
 
+from chat.bot import dummy_dan_response
 from utils import get_current_domino_user
 
 from typing import Any, List, Optional, Tuple, Union
@@ -33,7 +34,8 @@ def update_output_and_clear_input(
 ) -> Tuple[Union[Optional[List[html.Div]], str]]:
     if n_clicks > 0 or bool(n_submit):
         if input_value:
-            new_output = html.Div(input_value, style={"margin-bottom": "10px"})
+            response = dummy_dan_response(input_value)
+            new_output = html.Div(response, style={"margin-bottom": "10px"})
             return ([new_output] + current_output if current_output else [new_output], "")
     return current_output, input_value
 

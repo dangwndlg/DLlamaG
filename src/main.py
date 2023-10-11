@@ -1,3 +1,8 @@
+try:
+    import fire
+except ImportError:
+    raise ImportError("Must have fire installed - run 'pip install fire --upgrade --user' to install")
+
 from app import construct_domino_run_url, LlamaApp
 from config import IS_DOMINO_ENV
 
@@ -18,4 +23,4 @@ def main() -> None:
     app.run_server(host="0.0.0.0", port=8888, debug=True)
 
 if __name__ == "__main__":
-    main()
+    fire.Fire(main())
