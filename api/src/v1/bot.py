@@ -42,7 +42,7 @@ class ChatBot:
             )
 
             return DLlamaGResponse(
-                last_message=dialogs[0][-1]["content"],
+                last_message=dialogs[-1]["content"],
                 response=results[0]["generation"]["content"]
             )
         except Exception as e:
@@ -50,7 +50,7 @@ class ChatBot:
 
     async def dummy_chat_complete(self, dialogs: List[Dialog]) -> DLlamaGResponse:
         try:
-            lastMessage: str = dialogs[0][-1]["content"]
+            lastMessage: str = dialogs[-1]["content"]
             return DLlamaGResponse(
                 last_message=lastMessage,
                 response=f"You just said: '{lastMessage}'"

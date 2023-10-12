@@ -28,7 +28,7 @@ async def health_check():
 async def chat(data: DialogList) -> DLlamaGResponse:
     try:
         verified: List[Dict[str,str]] = await verify_dialogs(dialogs=data.dialogs)
-        print(await chat_complete([verified]))
+        print(await chat_complete(verified))
     except DialogException as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
