@@ -1,6 +1,5 @@
 from llama import Llama, Dialog
 
-
 from custom_types import DLlamaGResponse
 from exceptions import ChatCompleteException
 
@@ -35,7 +34,7 @@ class ChatBot:
     async def chat_complete(self, dialogs: List[Dialog]) -> DLlamaGResponse:
         try:
             results = self.generator.chat_completion(
-                dialogs=dialogs,
+                dialogs=[dialogs],
                 temperature=self.temperature,
                 top_p=self.top_p,
                 max_gen_len=self.max_gen_len
