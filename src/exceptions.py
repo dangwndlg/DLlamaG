@@ -1,2 +1,0 @@
-class AppConfigError(Exception):
-    pass
