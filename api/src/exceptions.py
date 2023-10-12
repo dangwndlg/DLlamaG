@@ -1,0 +1,2 @@
+class DialogException(Exception):
+    pass
