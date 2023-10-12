@@ -1,6 +1,7 @@
+from llama import Dialog
 from pydantic import BaseModel
 
-from typing import Dict, List
+from typing import Awaitable, Callable, List
 
 class DLlamaGResponse(BaseModel):
     last_message: str
@@ -12,3 +13,5 @@ class DLlamaGDialog(BaseModel):
 
 class DialogList(BaseModel):
     dialogs: List[DLlamaGDialog]
+
+ChatCompleteFunction = Callable[[List[Dialog]], Awaitable[DLlamaGResponse]]

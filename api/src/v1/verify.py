@@ -25,7 +25,7 @@ async def verify_dialogs(dialogs: List[DLlamaGDialog]) -> Dict[str, str]:
 
     for d in dialogs[1:]:
         if d.role not in ALLOWED_ROLES:
-            raise DialogException(f"Role for dialogs must be one of {ALLOWED_ROLES}")
+            raise DialogException(f"After first dialog, role for dialogs must be one of {ALLOWED_ROLES}")
         elif d.role == verified[-1]["role"]:
             raise DialogException("After first dialog, roles must alternate between 'user' and 'assistant'")
         verified.append(dict(d))
