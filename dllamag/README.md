@@ -41,3 +41,8 @@ d.clear_chat_history(clear_system_prompt=False)
 print(d.chat_history)
 > []
 ```
+
+#### Save chat history
+```
+d.save_chat_history("my_chats")
+```
