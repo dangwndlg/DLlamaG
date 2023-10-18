@@ -4,7 +4,7 @@ from exceptions import DialogException
 from typing import Dict, List, Tuple
 from custom_types import DLlamaGDialog
 
-ALLOWED_STARTING_ROLES: Tuple[str] = ("system", "user", "assistant")
+ALLOWED_STARTING_ROLES: Tuple[str] = ("system", "user")
 ALLOWED_ROLES: Tuple[str] = ("user", "assistant")
 
 async def verify_dialogs(dialogs: List[DLlamaGDialog]) -> Dict[str, str]:
@@ -20,6 +20,8 @@ async def verify_dialogs(dialogs: List[DLlamaGDialog]) -> Dict[str, str]:
         raise DialogException(f"Role for first dialog must be one of {ALLOWED_STARTING_ROLES}")
     elif dialogs[-1].role != "user":
         raise DialogException("Role of final dialog must be 'user'")
+    elif n > 1 and dialogs[0].role == "system" and dialogs[1].role != "user":
+        raise DialogException("Dialog roles must be sequenced (s/)u/a/u/a/.../u")
     # Unwrap dialogs into form model can take
     verified: List[Dict[str, str]] = [dict(dialogs[0])]
 
@@ -27,7 +29,7 @@ async def verify_dialogs(dialogs: List[DLlamaGDialog]) -> Dict[str, str]:
         if d.role not in ALLOWED_ROLES:
             raise DialogException(f"After first dialog, role for dialogs must be one of {ALLOWED_ROLES}")
         elif d.role == verified[-1]["role"]:
-            raise DialogException("After first dialog, roles must alternate between 'user' and 'assistant'")
+            raise DialogException("Dialog roles must be sequenced (s/)u/a/u/a/.../u")
         verified.append(dict(d))
 
     return verified
