@@ -42,7 +42,10 @@ async def health_check(request: Request):
 @v1_router.post("/chat")
 async def chat(data: DialogList, request: Request) -> DLlamaGResponse:
     logging_data: Dict[str, Any] = {
-        "origin": dict(request.client),
+        "origin": {
+            "host": request.client.host,
+            "port": request.client.port
+        },
         "headers": dict(request.headers),
         "cookies": dict(request.cookies),
         "chat_history": await request.body()
