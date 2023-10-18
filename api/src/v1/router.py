@@ -49,6 +49,7 @@ async def chat(data: DialogList, request: Request) -> DLlamaGResponse:
     request_id: str = str(uuid4())
     # if ENABLE_LOGGING:
     await v1_logger.log_incoming_request(
+        incoming_request=request,
         request_id=request_id,
         request_type="chat"
     )

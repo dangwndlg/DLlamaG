@@ -107,18 +107,18 @@ class JSONLogger:
         except:
             pass
 
-    async def log_incoming_request(request: Request, request_id: str, request_type: str) -> None:
-        raw_body: bytes = await request.body()
+    async def log_incoming_request(incoming_request: Request, request_id: str, request_type: str) -> None:
+        raw_body: bytes = await incoming_request.body()
         logging_data: Dict[str, Any] = {
             "log_type": "request",
             "request_id": request_id,
             "request_type": request_type,
             "origin": {
-                "host": request.client.host,
-                "port": request.client.port
+                "host": incoming_request.client.host,
+                "port": incoming_request.client.port
             },
-            "headers": dict(request.headers),
-            "cookies": dict(request.cookies),
+            "headers": dict(incoming_request.headers),
+            "cookies": dict(incoming_request.cookies),
             "request_body": json.loads(raw_body.decode('utf-8'))
         }
         print(logging_data)
