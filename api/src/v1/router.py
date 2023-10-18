@@ -46,7 +46,9 @@ async def chat(data: DialogList, request: Request) -> DLlamaGResponse:
     request_id: str = str(uuid4())
     raw_body: bytes = await request.body()
     logging_data: Dict[str, Any] = {
+        "log_type": "request",
         "request_id": request_id,
+        "request_type": "chat",
         "origin": {
             "host": request.client.host,
             "port": request.client.port
@@ -62,7 +64,9 @@ async def chat(data: DialogList, request: Request) -> DLlamaGResponse:
         chat_response: DLlamaGResponse = await chat_complete(verified)
 
         print({
-            "response_id": request_id,
+            "log_type": "response",
+            "request_id": request_id,
+            "request_type": "chat",
             "response": dict(chat_response)
         })
 
