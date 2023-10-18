@@ -1,9 +1,9 @@
 from fastapi import APIRouter, HTTPException, Request, status
-import json
 from uuid import uuid4
 
 from config import (
     BUILD_LLAMA, 
+    ENABLE_LOGGING,
     LLAMA_CKPT_DIR, 
     LLAMA_TOKENIZER_PATH,
     LLAMA_TOP_P,
@@ -13,6 +13,7 @@ from config import (
     LLAMA_TEMPERATURE
 )
 from exceptions import DialogException
+from logger import JSONLogger
 from v1.bot import ChatBot
 from v1.verify import verify_dialogs
 
@@ -36,6 +37,8 @@ dan: ChatBot = ChatBot(
 )
 chat_complete: ChatCompleteFunction = dan.chat_complete if BUILD_LLAMA else dan.dummy_chat_complete
 
+v1_logger: JSONLogger = JSONLogger("/v1/app.log")
+
 @v1_router.get("/health")
 async def health_check(request: Request):
     print(request.client)
@@ -44,33 +47,22 @@ async def health_check(request: Request):
 @v1_router.post("/chat")
 async def chat(data: DialogList, request: Request) -> DLlamaGResponse:
     request_id: str = str(uuid4())
-    raw_body: bytes = await request.body()
-    logging_data: Dict[str, Any] = {
-        "log_type": "request",
-        "request_id": request_id,
-        "request_type": "chat",
-        "origin": {
-            "host": request.client.host,
-            "port": request.client.port
-        },
-        "headers": dict(request.headers),
-        "cookies": dict(request.cookies),
-        "request_body": json.loads(raw_body.decode('utf-8'))
-    }
-    print(logging_data)
+    if ENABLE_LOGGING:
+        await v1_logger.log_incoming_request(
+            request_id=request_id,
+            request_type="chat"
+        )
     
     try:
         verified: List[Dict[str,str]] = await verify_dialogs(dialogs=data.dialogs)
         chat_response: DLlamaGResponse = await chat_complete(verified)
-
-        print({
-            "log_type": "response",
-            "request_id": request_id,
-            "request_type": "chat",
-            "response": dict(chat_response)
-        })
-
-        return chat_response
+        if ENABLE_LOGGING:
+            await v1_logger.log_outgoing_response(
+                request_id=request_id,
+                request_type="chat",
+                outgoing_response=dict(chat_response)
+            )
+            return chat_response
     except DialogException as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

@@ -1,6 +1,7 @@
+from fastapi import Request
+import json
 import logging
 from logging.handlers import RotatingFileHandler
-import json
 
 from typing import Any, Callable, Dict, Union
 
@@ -66,7 +67,7 @@ class JSONLogger:
 
         log_formatter: JSONFormatter = JSONFormatter({
             "level": "levelname", 
-            "message": "message", 
+            "data": "message", 
             "loggerName": "name", 
             "processName": "processName",
             "processID": "process", 
@@ -94,14 +95,39 @@ class JSONLogger:
             "CRITICAL": self.logger.critical
         }
 
-    async def _handle_message(self, message: Union[Dict[Any, Any], str]) -> str:
+    def _handle_message(self, message: Union[Dict[Any, Any], str]) -> str:
         if isinstance(message, dict):
             return json.dumps(message)
         return message
 
-    async def log(self, message: Union[Dict[Any, Any], str], level: str = "DEBUG") -> None:
+    def log(self, message: Union[Dict[Any, Any], str], level: str = "DEBUG") -> None:
         try:
-            msg: str = await self._handle_message(message=message)
+            msg: str = self._handle_message(message=message)
             self.logger_map[level](msg)
         except:
             pass
+
+    async def log_incoming_request(request: Request, request_id: str, request_type: str) -> None:
+        raw_body: bytes = await request.body()
+        logging_data: Dict[str, Any] = {
+            "log_type": "request",
+            "request_id": request_id,
+            "request_type": request_type,
+            "origin": {
+                "host": request.client.host,
+                "port": request.client.port
+            },
+            "headers": dict(request.headers),
+            "cookies": dict(request.cookies),
+            "request_body": json.loads(raw_body.decode('utf-8'))
+        }
+        print(logging_data)
+
+    async def log_outgoing_response(request_id: str, request_type: str, outgoing_response: Any) -> None:
+        logging_data = {
+            "log_type": "response",
+            "request_id": request_id,
+            "request_type": request_type,
+            "response": outgoing_response
+        }
+        print(logging_data)
