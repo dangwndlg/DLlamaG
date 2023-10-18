@@ -16,7 +16,8 @@ packages = find_packages()
 
 # Define package dependencies (including requests)
 install_requires = [
-    "requests",  # Add requests as a requirement
+    "requests",  
+    "pydantic"
     # List any other dependencies your module may need
 ]
 
