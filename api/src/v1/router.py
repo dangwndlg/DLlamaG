@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException, Request, status
 import json
+from uuid import uuid4
 
 from config import (
     BUILD_LLAMA, 
@@ -42,21 +43,30 @@ async def health_check(request: Request):
 
 @v1_router.post("/chat")
 async def chat(data: DialogList, request: Request) -> DLlamaGResponse:
-    raw_body: str = await request.body()
-
+    request_id: str = str(uuid4())
+    raw_body: bytes = await request.body()
     logging_data: Dict[str, Any] = {
+        "request_id": request_id,
         "origin": {
             "host": request.client.host,
             "port": request.client.port
         },
         "headers": dict(request.headers),
         "cookies": dict(request.cookies),
-        "chat_history": json.loads(raw_body.decode('utf-8'))
+        "request_body": json.loads(raw_body.decode('utf-8'))
     }
     print(logging_data)
+    
     try:
         verified: List[Dict[str,str]] = await verify_dialogs(dialogs=data.dialogs)
-        return await chat_complete(verified)
+        chat_response: DLlamaGResponse = await chat_complete(verified)
+
+        print({
+            "response_id": request_id,
+            "response": dict(chat_response)
+        })
+
+        return chat_response
     except DialogException as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
