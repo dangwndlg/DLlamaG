@@ -42,6 +42,8 @@ async def health_check(request: Request):
 
 @v1_router.post("/chat")
 async def chat(data: DialogList, request: Request) -> DLlamaGResponse:
+    raw_body: str = await request.body()
+
     logging_data: Dict[str, Any] = {
         "origin": {
             "host": request.client.host,
@@ -49,7 +51,7 @@ async def chat(data: DialogList, request: Request) -> DLlamaGResponse:
         },
         "headers": dict(request.headers),
         "cookies": dict(request.cookies),
-        "chat_history": json.dumps(await request.body())
+        "chat_history": json.loads(raw_body.decode('utf-8'))
     }
     print(logging_data)
     try:
