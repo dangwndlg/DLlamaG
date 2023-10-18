@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, Request, status
 
 from config import (
     BUILD_LLAMA, 
@@ -14,7 +14,7 @@ from exceptions import DialogException
 from v1.bot import ChatBot
 from v1.verify import verify_dialogs
 
-from typing import Dict, List
+from typing import Any, Dict, List
 from custom_types import ChatCompleteFunction, DLlamaGResponse, DialogList
 
 v1_router: APIRouter = APIRouter(
@@ -35,11 +35,19 @@ dan: ChatBot = ChatBot(
 chat_complete: ChatCompleteFunction = dan.chat_complete if BUILD_LLAMA else dan.dummy_chat_complete
 
 @v1_router.get("/health")
-async def health_check():
+async def health_check(request: Request):
+    print(request.client)
     return {"success": True}
 
 @v1_router.post("/chat")
-async def chat(data: DialogList) -> DLlamaGResponse:
+async def chat(data: DialogList, request: Request) -> DLlamaGResponse:
+    logging_data: Dict[str, Any] = {
+        "origin": request.client,
+        "headers": dict(request.headers),
+        "cookies": dict(request.cookies),
+        "chat_history": data.dialogs
+    }
+    print(logging_data)
     try:
         verified: List[Dict[str,str]] = await verify_dialogs(dialogs=data.dialogs)
         return await chat_complete(verified)
