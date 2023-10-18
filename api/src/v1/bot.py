@@ -14,7 +14,7 @@ class ChatBot:
         max_batch_size: int = 10,
         max_seq_len: int = 256,
         max_gen_len: Optional[int] = None,
-        temperature: int = 0.6,
+        temperature: float = 0.6,
         build: bool = True
     ) -> None:
         self.top_p = top_p

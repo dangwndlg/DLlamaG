@@ -1,6 +1,15 @@
 from fastapi import APIRouter, HTTPException, status
 
-from config import BUILD_LLAMA, LLAMA_CKPT_DIR, LLAMA_TOKENIZER_PATH
+from config import (
+    BUILD_LLAMA, 
+    LLAMA_CKPT_DIR, 
+    LLAMA_TOKENIZER_PATH,
+    LLAMA_TOP_P,
+    LLAMA_MAX_BATCH_SIZE,
+    LLAMA_MAX_SEQ_LEN,
+    LLAMA_MAX_GEN_LEN,
+    LLAMA_TEMPERATURE
+)
 from exceptions import DialogException
 from v1.bot import ChatBot
 from v1.verify import verify_dialogs
@@ -16,6 +25,11 @@ v1_router: APIRouter = APIRouter(
 dan: ChatBot = ChatBot(
     ckpt_dir=LLAMA_CKPT_DIR,
     tokenizer_path=LLAMA_TOKENIZER_PATH,
+    top_p=LLAMA_TOP_P,
+    max_batch_size=LLAMA_MAX_BATCH_SIZE,
+    max_seq_len=LLAMA_MAX_SEQ_LEN,
+    max_gen_len=LLAMA_MAX_GEN_LEN,
+    temperature=LLAMA_TEMPERATURE,
     build=BUILD_LLAMA
 )
 chat_complete: ChatCompleteFunction = dan.chat_complete if BUILD_LLAMA else dan.dummy_chat_complete

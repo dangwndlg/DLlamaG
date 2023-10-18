@@ -1,4 +1,4 @@
-from config import MAX_SEQ_LEN
+from config import LLAMA_MAX_BATCH_SIZE
 from exceptions import DialogException
 
 from typing import Dict, List, Tuple
@@ -10,8 +10,8 @@ ALLOWED_ROLES: Tuple[str] = ("user", "assistant")
 async def verify_dialogs(dialogs: List[DLlamaGDialog]) -> Dict[str, str]:
     # Verify dialogs are of correct length
     n: int = len(dialogs)
-    if n > MAX_SEQ_LEN:
-        raise DialogException(f"Dialogs length cannot exceed {MAX_SEQ_LEN}")
+    if n > LLAMA_MAX_BATCH_SIZE:
+        raise DialogException(f"Dialogs length cannot exceed {LLAMA_MAX_BATCH_SIZE}")
     elif n < 1:
         raise DialogException("Must have at least one user dialog")
     
