@@ -17,7 +17,7 @@ class DLlamaG:
         
         self.session: DLGRequestManager = DLGRequestManager()
 
-        if self._health_check() != True:
+        if not self._health_check():
             raise ConfigError("Health check returned unexpected response...")
         
         self.system_prompt = system_prompt
