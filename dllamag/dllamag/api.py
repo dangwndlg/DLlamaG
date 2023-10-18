@@ -44,10 +44,12 @@ class DLlamaG:
 
     def _calculate_num_chats(self) -> int:
         # Prompts are sent (s/)u/a/u/a/.../u
-        if (self.system_prompt and MAX_SEQ_LEN%2) \
-            or not(self.system_prompt or MAX_SEQ_LEN%2):
+        if MAX_SEQ_LEN%2 == 0:
             return MAX_SEQ_LEN-1
+        elif self.system_prompt is not None:
+            return MAX_SEQ_LEN-2
         return MAX_SEQ_LEN
+            
 
     def _chat(self) -> None:
         print("""
