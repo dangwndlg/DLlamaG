@@ -1,5 +1,6 @@
-from fire import Fire
-from fire.core import FireError, FireExit
+import os
+import json
+import time
 from requests.exceptions import ConnectionError
 
 from dllamag.config import API_HOST, API_VERSION, MAX_SEQ_LEN
@@ -140,6 +141,17 @@ You can clear your history by exiting chat and running the
 
         return None
 
+    def save_chat_history(self, save_dir: str) -> None:
+        if not os.path.isdir(save_dir):
+            os.mkdir(save_dir)
+
+        data = {
+            "history": [dict(c) for c in self.chat_history]
+        }
+
+        with open(os.path.join(save_dir, f"{time.time()}-chat.json"), 'w') as json_file:
+            json.dump(data, json_file, indent=4)
+        
     def set_system_prompt(self, prompt: Optional[str] = None) -> None:
         self.system_prompt = prompt
         self._num_chats = self._calculate_num_chats()

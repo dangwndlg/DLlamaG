@@ -1,4 +1,7 @@
 # dllamag
+Python bindings for using the DLlamaG API.
+
+All messages and chats may be logged on the server-side in plaintext (i.e. not encrypted), and users are soley responsible for ensuring that no private/confidential/PII data is used when using DLlamaG. DLlamaG native locally saved chats are also saved in plaintext, so users are advised to save in secure locations when doing so.
 
 ## Usage
 #### Import and Initialize
