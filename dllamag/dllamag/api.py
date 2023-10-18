@@ -50,7 +50,6 @@ class DLlamaG:
             return MAX_SEQ_LEN-2
         return MAX_SEQ_LEN
             
-
     def _chat(self) -> None:
         print("""
 Welcome to DLlamaG! To exit chat, enter "exit()" in the input box.

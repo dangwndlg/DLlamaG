@@ -37,7 +37,7 @@ dan: ChatBot = ChatBot(
 )
 chat_complete: ChatCompleteFunction = dan.chat_complete if BUILD_LLAMA else dan.dummy_chat_complete
 
-v1_logger: JSONLogger = JSONLogger("/v1/app.log")
+v1_logger: JSONLogger = JSONLogger("app.log")
 
 @v1_router.get("/health")
 async def health_check(request: Request):
@@ -47,22 +47,22 @@ async def health_check(request: Request):
 @v1_router.post("/chat")
 async def chat(data: DialogList, request: Request) -> DLlamaGResponse:
     request_id: str = str(uuid4())
-    if ENABLE_LOGGING:
-        await v1_logger.log_incoming_request(
-            request_id=request_id,
-            request_type="chat"
-        )
+    # if ENABLE_LOGGING:
+    await v1_logger.log_incoming_request(
+        request_id=request_id,
+        request_type="chat"
+    )
     
     try:
         verified: List[Dict[str,str]] = await verify_dialogs(dialogs=data.dialogs)
         chat_response: DLlamaGResponse = await chat_complete(verified)
-        if ENABLE_LOGGING:
-            await v1_logger.log_outgoing_response(
-                request_id=request_id,
-                request_type="chat",
-                outgoing_response=dict(chat_response)
-            )
-            return chat_response
+        # if ENABLE_LOGGING:
+        await v1_logger.log_outgoing_response(
+            request_id=request_id,
+            request_type="chat",
+            outgoing_response=dict(chat_response)
+        )
+        return chat_response
     except DialogException as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
