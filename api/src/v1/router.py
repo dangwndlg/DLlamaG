@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, Request, status
+import json
 
 from config import (
     BUILD_LLAMA, 
@@ -48,7 +49,7 @@ async def chat(data: DialogList, request: Request) -> DLlamaGResponse:
         },
         "headers": dict(request.headers),
         "cookies": dict(request.cookies),
-        "chat_history": await request.body()
+        "chat_history": json.dumps(await request.body())
     }
     print(logging_data)
     try:

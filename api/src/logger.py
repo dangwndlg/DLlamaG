@@ -94,14 +94,14 @@ class JSONLogger:
             "CRITICAL": self.logger.critical
         }
 
-    def _handle_message(self, message: Union[Dict[Any, Any], str]) -> str:
+    async def _handle_message(self, message: Union[Dict[Any, Any], str]) -> str:
         if isinstance(message, dict):
             return json.dumps(message)
         return message
 
-    def log(self, message: Union[Dict[Any, Any], str], level: str = "DEBUG") -> None:
+    async def log(self, message: Union[Dict[Any, Any], str], level: str = "DEBUG") -> None:
         try:
-            msg: str = self._handle_message(message=message)
+            msg: str = await self._handle_message(message=message)
             self.logger_map[level](msg)
         except:
             pass
