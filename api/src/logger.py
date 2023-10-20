@@ -112,14 +112,16 @@ class JSONLogger:
     #   router method, it will also be implicitly parsed into 
     #   the logging functions
     async def log_incoming_request(
-        incoming_request: Request,
+        self,
+        # incoming_request: Request,
         request_id: str,
         request_type: str,
         body: bytes = b'',
         host: Optional[str] = None,
         port: Optional[str] = None,
         headers: Optional[Headers] = None,
-        cookies: Optional[Dict[str, str]] = None
+        cookies: Optional[Dict[str, str]] = None,
+        level: str = "INFO"
     ) -> None:
         logging_data: Dict[str, Any] = {
             "log_type": "request",
@@ -133,13 +135,15 @@ class JSONLogger:
             "cookies": dict(cookies),
             "request_body": json.loads(body.decode('utf-8'))
         }
-        print(logging_data)
+        self.log(message=logging_data, level=level)
 
     async def log_outgoing_response(
-        incoming_request: Request,
+        self,
+        # incoming_request: Request,
         request_id: str,
         request_type: str,
-        outgoing_response: Any
+        outgoing_response: Any,
+        level: str ="INFO"
     ) -> None:
         logging_data = {
             "log_type": "response",
@@ -147,4 +151,4 @@ class JSONLogger:
             "request_type": request_type,
             "response": outgoing_response
         }
-        print(logging_data)
+        self.log(message=logging_data, level=level)
