@@ -10,14 +10,15 @@ from config import (
     LLAMA_MAX_BATCH_SIZE,
     LLAMA_MAX_SEQ_LEN,
     LLAMA_MAX_GEN_LEN,
-    LLAMA_TEMPERATURE
+    LLAMA_TEMPERATURE,
+    LOGGING_LOC
 )
 from exceptions import DialogException
 from logger import JSONLogger
 from v1.bot import ChatBot
 from v1.verify import verify_dialogs
 
-from typing import Any, Dict, List
+from typing import Dict, List
 from custom_types import ChatCompleteFunction, DLlamaGResponse, DialogList
 
 v1_router: APIRouter = APIRouter(
@@ -37,11 +38,21 @@ dan: ChatBot = ChatBot(
 )
 chat_complete: ChatCompleteFunction = dan.chat_complete if BUILD_LLAMA else dan.dummy_chat_complete
 
-v1_logger: JSONLogger = JSONLogger("app.log")
+v1_logger: JSONLogger = JSONLogger(LOGGING_LOC)
 
 @v1_router.get("/health")
 async def health_check(request: Request):
-    print(request.client)
+    request_id: str = str(uuid4())
+    if ENABLE_LOGGING:
+        await v1_logger.log_incoming_request(
+            request_id=request_id,
+            request_type="health",
+            body=None,
+            host=request.client.host,
+            port=request.client.port,
+            headers=request.headers,
+            cookies=request.cookies
+        )
     return {"success": True}
 
 @v1_router.post("/chat")
