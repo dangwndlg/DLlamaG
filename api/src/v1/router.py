@@ -62,12 +62,12 @@ async def chat(data: DialogList, request: Request) -> DLlamaGResponse:
     try:
         verified: List[Dict[str,str]] = await verify_dialogs(dialogs=data.dialogs)
         chat_response: DLlamaGResponse = await chat_complete(verified)
-        # if ENABLE_LOGGING:
-        #     await v1_logger.log_outgoing_response(
-        #         request_id=request_id,
-        #         request_type="chat",
-        #         outgoing_response=dict(chat_response)
-        #     )
+        if ENABLE_LOGGING:
+            await v1_logger.log_outgoing_response(
+                request_id=request_id,
+                request_type="chat",
+                outgoing_response=dict(chat_response)
+            )
         return chat_response
     except DialogException as e:
         raise HTTPException(
