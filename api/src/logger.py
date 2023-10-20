@@ -132,7 +132,8 @@ class JSONLogger:
         }
         print(logging_data)
 
-    async def log_outgoing_response(request_id: str, request_type: str, outgoing_response: Any) -> None:
+    async def log_outgoing_response(incoming_request: Request, request_id: str, request_type: str, outgoing_response: Any) -> None:
+        print("Request ID in logger:", request_id)
         logging_data = {
             "log_type": "response",
             "request_id": request_id,

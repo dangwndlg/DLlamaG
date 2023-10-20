@@ -63,6 +63,7 @@ async def chat(data: DialogList, request: Request) -> DLlamaGResponse:
         verified: List[Dict[str,str]] = await verify_dialogs(dialogs=data.dialogs)
         chat_response: DLlamaGResponse = await chat_complete(verified)
         if ENABLE_LOGGING:
+            print("Request ID in router:", request_id)
             await v1_logger.log_outgoing_response(
                 request_id=request_id,
                 request_type="chat",
