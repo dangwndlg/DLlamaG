@@ -97,6 +97,7 @@ class JSONLogger:
         }
 
     def _handle_message(self, message: Union[Dict[Any, Any], str]) -> str:
+        assert isinstance(message, (dict, str))
         if isinstance(message, dict):
             return json.dumps(message)
         return message
