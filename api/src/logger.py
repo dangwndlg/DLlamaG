@@ -108,6 +108,9 @@ class JSONLogger:
         except:
             pass
 
+    # Because the incoming request is implicitly parsed into the 
+    #   router method, it will also be implicitly parsed into 
+    #   the logging functions
     async def log_incoming_request(
         incoming_request: Request,
         request_id: str,
@@ -132,8 +135,12 @@ class JSONLogger:
         }
         print(logging_data)
 
-    async def log_outgoing_response(incoming_request: Request, request_id: str, request_type: str, outgoing_response: Any) -> None:
-        print("Request ID in logger:", request_id)
+    async def log_outgoing_response(
+        incoming_request: Request,
+        request_id: str,
+        request_type: str,
+        outgoing_response: Any
+    ) -> None:
         logging_data = {
             "log_type": "response",
             "request_id": request_id,
