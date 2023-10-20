@@ -1,9 +1,10 @@
-from fastapi import Request
+from fastapi import Request 
+from fastapi.datastructures import Headers
 import json
 import logging
 from logging.handlers import RotatingFileHandler
 
-from typing import Any, Callable, Dict, Union
+from typing import Any, Callable, Dict, Optional, Union
 
 # This JSON log formatter is taken from Bogdan Mircea on Stack Overflow:
 #   https://stackoverflow.com/questions/50144628/python-logging-into-file-as-a-dictionary-or-json
@@ -107,19 +108,27 @@ class JSONLogger:
         except:
             pass
 
-    async def log_incoming_request(incoming_request: Request, request_id: str, request_type: str) -> None:
-        raw_body: bytes = await incoming_request.body()
+    async def log_incoming_request(
+        incoming_request: Request,
+        request_id: str,
+        request_type: str,
+        body: Optional[bytes] = None,
+        host: Optional[str] = None,
+        port: Optional[str] = None,
+        headers: Optional[Headers] = None,
+        cookies: Optional[Dict[str, str]] = None
+    ) -> None:
         logging_data: Dict[str, Any] = {
             "log_type": "request",
             "request_id": request_id,
             "request_type": request_type,
             "origin": {
-                "host": incoming_request.client.host,
-                "port": incoming_request.client.port
+                "host": host,
+                "port": port
             },
-            "headers": dict(incoming_request.headers),
-            "cookies": dict(incoming_request.cookies),
-            "request_body": json.loads(raw_body.decode('utf-8'))
+            "headers": dict(headers),
+            "cookies": dict(cookies),
+            "request_body": json.loads(body.decode('utf-8'))
         }
         print(logging_data)
 
