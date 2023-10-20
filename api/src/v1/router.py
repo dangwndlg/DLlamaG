@@ -52,6 +52,7 @@ async def chat(data: DialogList, request: Request) -> DLlamaGResponse:
     await v1_logger.log_incoming_request(
         request_id=request_id,
         request_type="chat",
+        body=body,
         host=request.client.host,
         port=request.client.port,
         headers=request.headers,

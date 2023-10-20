@@ -112,7 +112,7 @@ class JSONLogger:
         incoming_request: Request,
         request_id: str,
         request_type: str,
-        body: Optional[bytes] = None,
+        body: bytes = b'',
         host: Optional[str] = None,
         port: Optional[str] = None,
         headers: Optional[Headers] = None,
