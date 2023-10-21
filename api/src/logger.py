@@ -1,3 +1,4 @@
+from fastapi import Request
 from fastapi.datastructures import Headers
 from exceptions import LoggerException
 import json
@@ -118,13 +119,20 @@ class JSONLogger:
         self,
         request_id: str,
         request_type: str,
-        body: bytes = b"",
-        host: Optional[str] = None,
-        port: Optional[str] = None,
-        headers: Optional[Headers] = None,
-        cookies: Optional[Dict[str, str]] = None,
+        request: Request,
+        # body: bytes = b"",
+        # host: Optional[str] = None,
+        # port: Optional[str] = None,
+        # headers: Optional[Headers] = None,
+        # cookies: Optional[Dict[str, str]] = None,
         level: str = "INFO"
     ) -> None:
+        host = request.client.host
+        port = request.client.port
+
+        headers = request.headers
+        cookies = request.cookies
+        body = await request.body()
         logging_data: Dict[str, Any] = {
             "log_type": "request",
             "request_id": request_id,

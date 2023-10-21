@@ -6,6 +6,9 @@ from exceptions import ChatCompleteException
 from typing import List, Optional
 
 class ChatBot:
+    """
+    Wrapper for Meta's LLaMA large language model
+    """
     def __init__(
         self,
         ckpt_dir: str,
