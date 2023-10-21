@@ -1,10 +1,11 @@
-from fastapi import Request 
 from fastapi.datastructures import Headers
+from exceptions import LoggerException
 import json
 import logging
 from logging.handlers import RotatingFileHandler
+import os
 
-from typing import Any, Callable, Dict, Optional, Union
+from typing import Any, Callable, Dict, Optional
 
 # This JSON log formatter is taken from Bogdan Mircea on Stack Overflow:
 #   https://stackoverflow.com/questions/50144628/python-logging-into-file-as-a-dictionary-or-json
@@ -62,7 +63,12 @@ class JSONFormatter(logging.Formatter):
         return json.dumps(message_dict, default=str)
 
 class JSONLogger:
-    def __init__(self, file_path: str, log_level: int =logging.INFO) -> None:
+    def __init__(
+        self,
+        log_file_name: str, 
+        log_dir: str = "",
+        log_level: int = logging.INFO
+    ) -> None:
         self.logger: logging.Logger = logging.Logger(__name__)
         self.logger.setLevel(log_level)
 
@@ -77,8 +83,14 @@ class JSONLogger:
             "timestamp": "asctime"
         })
 
+        if not os.path.isdir(log_dir) and log_dir != "":
+            try:
+                os.mkdir(log_dir)
+            except:
+                raise LoggerException(f"Could not create logging directory {log_dir}")
+
         file_handler: RotatingFileHandler = RotatingFileHandler(
-            filename=file_path,
+            filename=os.path.join(log_dir, log_file_name),
             mode="a",
             maxBytes=1e6,
             backupCount=3,
@@ -96,16 +108,9 @@ class JSONLogger:
             "CRITICAL": self.logger.critical
         }
 
-    def _handle_message(self, message: Union[Dict[Any, Any], str]) -> str:
-        assert isinstance(message, (dict, str))
-        if isinstance(message, dict):
-            return json.dumps(message)
-        return message
-
-    def log(self, message: Union[Dict[Any, Any], str], level: str = "DEBUG") -> None:
+    def log(self, message: object, level: str = "DEBUG") -> None:
         try:
-            msg: str = self._handle_message(message=message)
-            self.logger_map[level](msg)
+            self.logger_map[level](message)
         except:
             pass
 
@@ -139,7 +144,7 @@ class JSONLogger:
         request_id: str,
         request_type: str,
         outgoing_response: Any,
-        level: str ="INFO"
+        level: str = "INFO"
     ) -> None:
         logging_data = {
             "log_type": "response",

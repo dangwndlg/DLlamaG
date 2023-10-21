@@ -1,5 +1,8 @@
+class ChatCompleteException(Exception):
+    pass
+
 class DialogException(Exception):
     pass
 
-class ChatCompleteException(Exception):
+class LoggerException(Exception):
     pass
