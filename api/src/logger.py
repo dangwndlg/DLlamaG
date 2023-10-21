@@ -118,7 +118,7 @@ class JSONLogger:
         self,
         request_id: str,
         request_type: str,
-        body: bytes = b'',
+        body: bytes = b"",
         host: Optional[str] = None,
         port: Optional[str] = None,
         headers: Optional[Headers] = None,
@@ -135,7 +135,7 @@ class JSONLogger:
             },
             "headers": dict(headers),
             "cookies": dict(cookies),
-            "request_body": json.loads(body.decode('utf-8'))
+            "request_body": json.loads(body.decode('utf-8') or "null")
         }
         self.log(message=logging_data, level=level)
 

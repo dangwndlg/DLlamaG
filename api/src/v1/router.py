@@ -51,7 +51,7 @@ async def health_check(request: Request):
         await v1_logger.log_incoming_request(
             request_id=request_id,
             request_type="health",
-            body=b'',
+            body=b"",
             host=request.client.host,
             port=request.client.port,
             headers=request.headers,
