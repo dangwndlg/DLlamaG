@@ -120,29 +120,20 @@ class JSONLogger:
         request_id: str,
         request_type: str,
         request: Request,
-        # body: bytes = b"",
-        # host: Optional[str] = None,
-        # port: Optional[str] = None,
-        # headers: Optional[Headers] = None,
-        # cookies: Optional[Dict[str, str]] = None,
         level: str = "INFO"
     ) -> None:
-        host = request.client.host
-        port = request.client.port
-
-        headers = request.headers
-        cookies = request.cookies
         body = await request.body()
+
         logging_data: Dict[str, Any] = {
             "log_type": "request",
             "request_id": request_id,
             "request_type": request_type,
             "origin": {
-                "host": host,
-                "port": port
+                "host": request.client.host,
+                "port": request.client.port
             },
-            "headers": dict(headers),
-            "cookies": dict(cookies),
+            "headers": dict(request.headers),
+            "cookies": dict(request.cookies),
             "request_body": json.loads(body.decode('utf-8') or "null")
         }
         self.log(message=logging_data, level=level)
@@ -151,7 +142,7 @@ class JSONLogger:
         self,
         request_id: str,
         request_type: str,
-        outgoing_response: Any,
+        outgoing_response: object,
         level: str = "INFO"
     ) -> None:
         logging_data = {

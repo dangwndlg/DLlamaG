@@ -52,28 +52,19 @@ async def health_check(request: Request):
             request_id=request_id,
             request_type="health",
             request=request
-            # body=b"",
-            # host=request.client.host,
-            # port=request.client.port,
-            # headers=request.headers,
-            # cookies=request.cookies
         )
     return {"success": True}
 
 @v1_router.post("/chat")
 async def chat(data: DialogList, request: Request) -> DLlamaGResponse:
     request_id: str = str(uuid4())
-    body: bytes = await request.body()
-    # if ENABLE_LOGGING:
-    #     await v1_logger.log_incoming_request(
-    #         request_id=request_id,
-    #         request_type="chat",
-    #         body=body,
-    #         host=request.client.host,
-    #         port=request.client.port,
-    #         headers=request.headers,
-    #         cookies=request.cookies
-    #     )
+    
+    if ENABLE_LOGGING:
+        await v1_logger.log_incoming_request(
+            request_id=request_id,
+            request_type="chat",
+            request=request
+        )
     
     try:
         verified: List[Dict[str,str]] = await verify_dialogs(dialogs=data.dialogs)
