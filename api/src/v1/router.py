@@ -11,7 +11,8 @@ from config import (
     LLAMA_MAX_SEQ_LEN,
     LLAMA_MAX_GEN_LEN,
     LLAMA_TEMPERATURE,
-    LOGGING_LOC
+    LOGGING_FILE_NAME,
+    LOGGING_DIR
 )
 from exceptions import DialogException
 from logger import JSONLogger
@@ -38,7 +39,10 @@ dan: ChatBot = ChatBot(
 )
 chat_complete: ChatCompleteFunction = dan.chat_complete if BUILD_LLAMA else dan.dummy_chat_complete
 
-v1_logger: JSONLogger = JSONLogger(LOGGING_LOC)
+v1_logger: JSONLogger = JSONLogger(
+    log_file_name=LOGGING_FILE_NAME,
+    log_dir=LOGGING_DIR
+)
 
 @v1_router.get("/health")
 async def health_check(request: Request):
