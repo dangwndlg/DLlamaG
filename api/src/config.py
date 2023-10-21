@@ -5,7 +5,7 @@ API_PORT: int = int(os.getenv("API_PORT", 8000))
 
 ENABLE_LOGGING: bool = True if os.getenv("ENABLE_LOGGING", "").lower() == "true" else False
 LOGGING_DIR: str = "api_logs"
-LOGGING_FILE_PATH: str = "api.log"
+LOGGING_FILE_NAME: str = "api.log"
 
 # Whether to build the full llama model or test dummy
 BUILD_LLAMA: bool = True if os.getenv("BUILD_LLAMA", "").lower() == "true" else False
