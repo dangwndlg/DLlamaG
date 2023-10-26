@@ -1,12 +1,12 @@
 from fastapi import Request
-from fastapi.datastructures import Headers
 from exceptions import LoggerException
 import json
 import logging
 from logging.handlers import RotatingFileHandler
 import os
 
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Dict
+from custom_types import RequestType, LogLevel
 
 # This JSON log formatter is taken from Bogdan Mircea on Stack Overflow:
 #   https://stackoverflow.com/questions/50144628/python-logging-into-file-as-a-dictionary-or-json
@@ -70,6 +70,13 @@ class JSONLogger:
         log_dir: str = "",
         log_level: int = logging.INFO
     ) -> None:
+        """
+        Logger that logs API requests and responses
+
+        @param str log_file_name: Name of the output logs file
+        @param str log_dir: Directory where logs are created. New directory created if doesn't already exists.
+        @param int log_level: Base log level for logs to be written
+        """
         self.logger: logging.Logger = logging.Logger(__name__)
         self.logger.setLevel(log_level)
 
@@ -110,6 +117,12 @@ class JSONLogger:
         }
 
     def log(self, message: object, level: str = "DEBUG") -> None:
+        """
+        Method to log a given message at given level. No log is recorded if theres an error.
+
+        @param object message: Message to be logged
+        @param str level: Log level - must be key in log map
+        """
         try:
             self.logger_map[level](message)
         except:
@@ -118,10 +131,18 @@ class JSONLogger:
     async def log_incoming_request(
         self,
         request_id: str,
-        request_type: str,
+        request_type: RequestType,
         request: Request,
-        level: str = "INFO"
+        level: LogLevel = "INFO"
     ) -> None:
+        """
+        Logs an incoming request
+
+        @param str request_id: Given UUID of incoming request
+        @param str request_type: Whether the request was a chat request or health check
+        @param fastapi.Request request: Incoming request
+        @param LogLevel level: Logging level
+        """
         body = await request.body()
 
         logging_data: Dict[str, Any] = {
@@ -134,17 +155,25 @@ class JSONLogger:
             },
             "headers": dict(request.headers),
             "cookies": dict(request.cookies),
-            "request_body": json.loads(body.decode('utf-8') or "null")
+            "request_body": json.loads(body.decode("utf-8") or "null")
         }
         self.log(message=logging_data, level=level)
 
     async def log_outgoing_response(
         self,
         request_id: str,
-        request_type: str,
+        request_type: RequestType,
         outgoing_response: object,
-        level: str = "INFO"
+        level: LogLevel = "INFO"
     ) -> None:
+        """
+        Logs outgoing request
+
+        @param str request_id: Given UUID of incoming request
+        @param str request_type: Whether the request was a chat request or health check
+        @param object outgoing_response: Outgoing response body
+        @param LogLevel level: Logging level
+        """
         logging_data = {
             "log_type": "response",
             "request_id": request_id,
