@@ -8,6 +8,15 @@ from typing import List, Optional
 class ChatBot:
     """
     Wrapper for Meta's LLaMA large language model
+
+    @param str ckpt_dir: Path to model checkpoints
+    @param str tokenizer_path: Path to model tokenizer
+    @param float top_p: Top-p probability threshold for nucelus sampling
+    @param int max_batch_size: Maximum batch size for inference
+    @param int max_seq_len: Maximum sequence length for input text
+    @param Optional[int] max_gen_len: Maximum length of generated text sequence
+    @param float temperature: Temperature value for controlling randomness in sampling
+    @param bool build: Whether to build the LLaMA model or use the dummy
     """
     def __init__(
         self,
@@ -35,6 +44,13 @@ class ChatBot:
             )
 
     async def chat_complete(self, dialogs: List[Dialog]) -> DLlamaGResponse:
+        """
+        Generates a chat response using LLaMA model based off input sequences
+
+        @param List[Dialog] dialogs: Input dialog sequences
+
+        @returns DLlamaGResponse: Response from model
+        """
         try:
             results = self.generator.chat_completion(
                 dialogs=[dialogs],
@@ -51,6 +67,13 @@ class ChatBot:
             raise ChatCompleteException(f"Could not complete chat due to: {e}")
 
     async def dummy_chat_complete(self, dialogs: List[Dialog]) -> DLlamaGResponse:
+        """
+        Generates a response using the last entry in the input sequence
+
+        @param List[Dialog] dialogs: Input dialog sequences
+
+        @returns DLlamaGResponse: Dummy response
+        """
         try:
             lastMessage: str = dialogs[-1]["content"]
             return DLlamaGResponse(

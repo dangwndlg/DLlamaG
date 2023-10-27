@@ -46,6 +46,9 @@ v1_logger: JSONLogger = JSONLogger(
 
 @v1_router.get("/health")
 async def health_check(request: Request):
+    """
+    Health check endpoint for v1 router
+    """
     request_id: str = str(uuid4())
     if ENABLE_LOGGING:
         await v1_logger.log_incoming_request(
@@ -57,6 +60,24 @@ async def health_check(request: Request):
 
 @v1_router.post("/chat")
 async def chat(data: DialogList, request: Request) -> DLlamaGResponse:
+    """
+    Chat endpoint for v1 router
+    Request body:
+        {
+            dialogs: [
+                {
+                    role: string,
+                    content: string
+                },
+                ...
+            ]
+        }
+    Response body:
+        {
+            last_message: string,
+            response: string
+        }
+    """
     request_id: str = str(uuid4())
     
     if ENABLE_LOGGING:

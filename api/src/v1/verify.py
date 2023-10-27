@@ -7,7 +7,15 @@ from custom_types import DLlamaGDialog
 ALLOWED_STARTING_ROLES: Tuple[str] = ("system", "user")
 ALLOWED_ROLES: Tuple[str] = ("user", "assistant")
 
-async def verify_dialogs(dialogs: List[DLlamaGDialog]) -> Dict[str, str]:
+async def verify_dialogs(dialogs: List[DLlamaGDialog]) -> List[Dict[str, str]]:
+    """
+    Verifies whether a list of dialogs is valid, and converts them into a 
+        dictionary to be processed by the LLaMA model
+
+    @param List[DLlamaGDialog] dialogs: List of dialogs to verify
+
+    @returns List[Dict[str, str]]: "jsonified" dialogs
+    """
     # Verify dialogs are of correct length
     n: int = len(dialogs)
     if n > LLAMA_MAX_BATCH_SIZE:
@@ -25,6 +33,7 @@ async def verify_dialogs(dialogs: List[DLlamaGDialog]) -> Dict[str, str]:
     # Unwrap dialogs into form model can take
     verified: List[Dict[str, str]] = [dict(dialogs[0])]
 
+    # Verify dialogs sequentially and add them to the list of verified
     for d in dialogs[1:]:
         if d.role not in ALLOWED_ROLES:
             raise DialogException(f"After first dialog, role for dialogs must be one of {ALLOWED_ROLES}")
