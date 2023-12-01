@@ -19,7 +19,7 @@ ENV LLAMA_TOKENIZER_PATH="/mnt/api/llama/tokenizer.model"
 # Copy code
 COPY . .
 
-COPY ${LLAMA_CKPT_DIR} "./llama/llama-2-7b-chat"
+COPY ${LLAMA_CKPT_DIR} "./llama/llama-2-7b-chat/"
 COPY ${LLAMA_TOKENIZER_PATH} "./llama/tokenizer.model"
 
 RUN pip install -r ./requirements.txt
